@@ -1,0 +1,16 @@
+{
+  "name": "lhscan",
+  "description": "Tracks read manga",
+  "version": "1.0",
+  "permissions": [
+    "storage"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://lhscan.net/quan-ly.html"],
+      "run_at": "document_idle",
+      "js": ["manga_list.js"]
+    }
+  ],
+  "manifest_version": 2
+}
