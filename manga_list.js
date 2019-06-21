@@ -1,7 +1,20 @@
 /* global chrome */
 
 const COLUMN = {
-  NAME: 0
+  THUMBNAIL: 0,
+  NAME: 1
+}
+
+const createThumbnailTd = () => {
+  const td = document.createElement('td')
+  td.style.alignContent = 'center'
+
+  const thumbnail = new window.Image()
+  thumbnail.width = 100
+  thumbnail.height = 120
+
+  td.append(thumbnail)
+  return td
 }
 
 const genMangaDic = (title) => {
@@ -64,6 +77,9 @@ const main = () => {
   const mangaTable = document.getElementsByClassName('jtable-data-row')
   for (const rowIndex in mangaTable) {
     const mangaRow = mangaTable[rowIndex].childNodes
+    const thumbnailTd = createThumbnailTd()
+    mangaTable[rowIndex].insertBefore(thumbnailTd, mangaRow[0])
+
     const mangaTitle = mangaRow[COLUMN.NAME].innerText
     const mangaUrl = mangaRow[COLUMN.NAME].firstElementChild.href
 
@@ -72,10 +88,10 @@ const main = () => {
         fetchMangaThumbnailSrc(mangaUrl).then((thumbnailSrc) => {
           return saveManga(mangaTitle, { thumbnailSrc: thumbnailSrc })
         }).then((mangaData) => {
-          console.log(mangaData.thumbnailSrc)
+          thumbnailTd.firstChild.src = mangaData.thumbnailSrc
         })
       } else {
-        console.log(mangaData.thumbnailSrc)
+        thumbnailTd.firstChild.src = mangaData.thumbnailSrc
       }
     })
   }
