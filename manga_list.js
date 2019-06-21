@@ -1,5 +1,31 @@
+/* global chrome */
+
 const COLUMN = {
   NAME: 0
+}
+
+const genMangaDic = (title) => {
+  let dic = {}
+  dic[title] = { thumbnailSrc: null }
+  return dic
+}
+
+const getMangaData = (mangaTitle) => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.get(genMangaDic(mangaTitle), function (result) {
+      resolve(result[mangaTitle])
+    })
+  })
+}
+
+const saveManga = (title, manga) => {
+  let dic = {}
+  dic[title] = manga
+  return new Promise((resolve, reject) => {
+    chrome.storage.local.set(dic, function () {
+      resolve(dic[title])
+    })
+  })
 }
 
 const fetchHTML = (url) => {
@@ -41,11 +67,16 @@ const main = () => {
     const mangaTitle = mangaRow[COLUMN.NAME].innerText
     const mangaUrl = mangaRow[COLUMN.NAME].firstElementChild.href
 
-    fetchMangaThumbnailSrc(mangaUrl).then(thumbnailSrc => {
-      console.log(thumbnailSrc)
-      console.log(mangaTitle)
-    }).catch(error => {
-      console.error(error)
+    getMangaData(mangaTitle).then((mangaData) => {
+      if (mangaData.thumbnailSrc === null) {
+        fetchMangaThumbnailSrc(mangaUrl).then((thumbnailSrc) => {
+          return saveManga(mangaTitle, { thumbnailSrc: thumbnailSrc })
+        }).then((mangaData) => {
+          console.log(mangaData.thumbnailSrc)
+        })
+      } else {
+        console.log(mangaData.thumbnailSrc)
+      }
     })
   }
 }
